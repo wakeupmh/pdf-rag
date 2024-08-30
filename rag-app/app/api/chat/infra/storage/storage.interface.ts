@@ -1,11 +1,11 @@
-import { Readable } from 'stream'
+import { Readable } from "stream";
 
 export type PutObjectResponse = {
-  statusCode?: string
-  versionId?: string
-  keyId?: string
-  requestId?: string
-}
+  statusCode?: string;
+  versionId?: string;
+  keyId?: string;
+  requestId?: string;
+};
 
 export interface StorageInterface {
   putObject(
@@ -14,7 +14,18 @@ export interface StorageInterface {
     file: any,
     encoding?: string,
     contentType?: string,
-  ): Promise<PutObjectResponse>
+  ): Promise<PutObjectResponse>;
 
-  getObject(storageName: string, key: string): Promise<{ body: Readable; metadata?: any } | undefined>
+  getObject(
+    storageName: string,
+    key: string,
+  ): Promise<{ body: Readable; metadata?: any } | undefined>;
+
+  getAllObjects({
+    storageName,
+    prefix,
+  }: {
+    storageName: string;
+    prefix: string;
+  }): Promise<any>;
 }

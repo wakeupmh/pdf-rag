@@ -2,10 +2,10 @@ export const PGVECTOR_COLLECTION = "data";
 export const PGVECTOR_SCHEMA = "public";
 export const PGVECTOR_TABLE = "llamaindex_embedding";
 
-const REQUIRED_ENV_VARS = ["PG_CONNECTION_STRING"];
+const REQUIRED_ENV_VARS: any = [];
 
 export function checkRequiredEnvVars() {
-  const missingEnvVars = REQUIRED_ENV_VARS.filter((envVar) => {
+  const missingEnvVars = REQUIRED_ENV_VARS.filter((envVar: any) => {
     return !process.env[envVar];
   });
 

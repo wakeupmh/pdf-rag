@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
+  paginateListObjectsV2,
 } from "@aws-sdk/client-s3";
 import { PutObjectResponse, StorageInterface } from "./storage.interface";
 
@@ -58,5 +59,25 @@ export default class S3Storage implements StorageInterface {
       console.error("Bucket", { error: e });
       return undefined;
     }
+  }
+
+  public async getAllObjects({
+    storageName,
+    prefix,
+  }: {
+    storageName: string;
+    prefix: string;
+  }) {
+    const totalFiles = [];
+    for await (const data of paginateListObjectsV2(
+      { client: this.s3Client },
+      {
+        Bucket: storageName,
+        Prefix: prefix,
+      },
+    )) {
+      totalFiles.push(...(data.Contents ?? []));
+    }
+    return totalFiles;
   }
 }
