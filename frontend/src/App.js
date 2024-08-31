@@ -1,60 +1,21 @@
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import { QAHeader } from "./QAHeader";
 import Chat from "./Chat";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TextField, Typography } from "@mui/material";
 import * as React from "react";
-import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingSpinner from "./Spinner";
 import IconButton from "@mui/material/IconButton";
 import SendIcon from "@mui/icons-material/Send";
-import UrlSourcesForm from "./WebUrlsForm";
-import {modelList} from "./RAGModels"
 
-const App = (props) => {
+const App = () => {
+  const baseUrl = process.env.REACT_APP_API_URL;
   const [history, setHistory] = useState([]);
-  const [selectedModel, setSelectedModel] = useState(undefined);
-  const [baseUrl, setBaseUrl] = useState(undefined);
   const [question, setQuestion] = useState('');
   const [spinner, setSpinner] = useState(false);
   const [sessionId, setSessionId] = useState(undefined);
-  const [sourceUrlInfo, setSourceUrlInfo] = useState({
-    exclusionFilters: [],
-    inclusionFilters: [],
-    seedUrlList: [],
-  });
-  const [hasWebDataSource, setHasWebDataSource] = useState(false);
-
-  useEffect(() => {
-    if (!baseUrl) {
-      return;
-    }
-    const getWebSourceConfiguration = async () => {
-      fetch(baseUrl + "urls", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setSourceUrlInfo({
-            exclusionFilters: data.exclusionFilters ?? [],
-            inclusionFilters: data.inclusionFilters ?? [],
-            seedUrlList: data.seedUrlList ?? [],
-          });
-          setHasWebDataSource(true);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
-
-    };
-    getWebSourceConfiguration();
-  }, [baseUrl]);
 
   const handleSendQuestion = () => {
     setSpinner(true);
@@ -67,7 +28,6 @@ const App = (props) => {
       body: JSON.stringify({
         requestSessionId: sessionId,
         question: question,
-        modelId: selectedModel?.modelId,
       }),
     })
       .then((res) => res.json())
@@ -85,6 +45,7 @@ const App = (props) => {
         ]);
       })
       .catch((err) => {
+        logger.error(err);
         setSpinner(false);
         setHistory([
           ...history,
@@ -106,35 +67,6 @@ const App = (props) => {
 
   const onClearHistory = () => setHistory([]);
 
-  const handleUpdateUrls = async (
-    urls,
-    newExclusionFilters,
-    newInclusionFilters
-  ) => {
-    try {
-      const response = await fetch(baseUrl + "web-urls", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          urlList: [...new Set(urls)],
-          exclusionFilters: [...new Set(newExclusionFilters)],
-          inclusionFilters: [...new Set(newInclusionFilters)],
-        }),
-      });
-      return !!response.ok;
-    } catch (error) {
-      console.log("Error:", error);
-      return false;
-    }
-  };
-
-  const handleChangeModel = (model) => {
-    setSelectedModel(model);
-    setSessionId(undefined)
-  }
-
   return (
     <Box
       sx={{
@@ -153,7 +85,7 @@ const App = (props) => {
         }}
       >
         <Typography variant="h5" sx={{ textAlign: "center" }}>
-          AWS Q&A
+          Juridico Q&A
         </Typography>
         <br></br>
         <br></br>
@@ -165,15 +97,6 @@ const App = (props) => {
             height: "100%",
           }}
         >
-          <QAHeader
-            setBaseUrl={setBaseUrl}
-            baseUrl={baseUrl}
-            modelList={modelList}
-            setSelectedModel={handleChangeModel}
-            selectedModel={selectedModel}
-          />
-          <Divider />
-
           <Box
             sx={{
               display: "flex",
@@ -228,18 +151,6 @@ const App = (props) => {
             <SendIcon />
           </IconButton>
         </Box>
-        {hasWebDataSource ? (
-          <Box sx={{ paddingTop: "15px" }}>
-            <UrlSourcesForm
-              exclusionFilters={sourceUrlInfo.exclusionFilters}
-              inclusionFilters={sourceUrlInfo.inclusionFilters}
-              seedUrlList={sourceUrlInfo.seedUrlList.map(
-                (urlObj) => urlObj.url
-              )}
-              handleUpdateUrls={handleUpdateUrls}
-            />
-          </Box>
-        ) : null}
       </Paper>
     </Box>
   );
