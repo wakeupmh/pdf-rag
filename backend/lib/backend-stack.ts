@@ -146,11 +146,34 @@ export class BackendStack extends Stack {
       },
       rules: [
         {
-          name: "IPAllowList",
+          name: "AllowAmplifyRequests",
           priority: 1,
           statement: {
-            ipSetReferenceStatement: {
-              arn: allowedIpSet.attrArn,
+            orStatement: {
+              statements: [
+                {
+                  byteMatchStatement: {
+                    fieldToMatch: {
+                      singleHeader: {
+                        name: "x-amzn-trace-id",
+                      },
+                    },
+                    positionalConstraint: "CONTAINS",
+                    searchString: "Root=1-",
+                    textTransformations: [
+                      {
+                        priority: 0,
+                        type: "NONE",
+                      },
+                    ],
+                  },
+                },
+                {
+                  ipSetReferenceStatement: {
+                    arn: allowedIpSet.attrArn,
+                  },
+                },
+              ],
             },
           },
           action: {
@@ -159,7 +182,7 @@ export class BackendStack extends Stack {
           visibilityConfig: {
             sampledRequestsEnabled: true,
             cloudWatchMetricsEnabled: true,
-            metricName: "IPAllowList",
+            metricName: "AllowAmplifyRequests",
           },
         },
       ],
