@@ -34,7 +34,6 @@ const App = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("data", data);
         setSpinner(false);
         setSessionId(data.sessionId);
         setHistory([

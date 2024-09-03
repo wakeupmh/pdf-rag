@@ -71,7 +71,7 @@ const Chat = (props) => {
           padding="30px"
         >
           <Typography variant="body1" color="textSecondary">
-            No chat history
+           Sem histórico de conversas
           </Typography>
         </Box>
       )}
