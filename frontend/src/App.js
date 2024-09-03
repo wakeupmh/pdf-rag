@@ -115,7 +115,13 @@ const App = () => {
           <Chat history={history} />
           <br></br>
           {spinner ? (
-            <Box sx={{ justifyContent: "center", padding: "20px" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "20px",
+              }}
+            >
               <LoadingSpinner />
             </Box>
           ) : (
@@ -151,7 +157,7 @@ const App = () => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
             paddingBottom: "20px",
             paddingTop: "20px",
