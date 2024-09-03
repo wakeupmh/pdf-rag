@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import SendIcon from "@mui/icons-material/Send";
 
 const App = () => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = "https://w2r678gxwd.execute-api.us-east-1.amazonaws.com/prod/";
   const [history, setHistory] = useState([]);
   const [question, setQuestion] = useState('');
   const [spinner, setSpinner] = useState(false);
@@ -45,7 +45,7 @@ const App = () => {
         ]);
       })
       .catch((err) => {
-        logger.error(err);
+        console.logger.error(err);
         setSpinner(false);
         setHistory([
           ...history,
@@ -106,13 +106,13 @@ const App = () => {
               paddingTop: "20px",
             }}
           >
-            <Typography variant="overline">3. Ask a question:</Typography>
+            <Typography variant="overline">Pergunte aos seus documentos:</Typography>
             <Button
               disabled={history.length === 0}
               startIcon={<DeleteIcon />}
               onClick={onClearHistory}
             >
-              Clear History
+              Limpar histórico
             </Button>
           </Box>
           <Chat history={history} />
@@ -137,7 +137,7 @@ const App = () => {
           <TextField
             disabled={spinner || !baseUrl}
             variant="standard"
-            label="Enter your question here"
+            label="Escreva sua questão aqui"
             value={question}
             onChange={(e) => setQuestion(e.target?.value)}
             onKeyDown={handleKeyDown}
