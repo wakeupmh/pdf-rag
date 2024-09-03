@@ -25,7 +25,7 @@ export class BackendStack extends Stack {
     /** Knowledge Base */
 
     const knowledgeBase = new bedrock.KnowledgeBase(this, "knowledgeBase", {
-      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V1,
+      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
     });
 
     /** S3 bucket for Bedrock data source */
@@ -35,13 +35,13 @@ export class BackendStack extends Stack {
       "arn:aws:s3:::doth-iaus"
     );
 
-    const s3DataSource = new bedrock.S3DataSource(this, "s3DataSource", {
+    const s3DataSource = new bedrock.S3DataSource(this, "iaus-bkt", {
       bucket: sourceDocBkt,
       knowledgeBase: knowledgeBase,
-      dataSourceName: "S3DataSource",
+      dataSourceName: "iaus-bkt",
       chunkingStrategy: bedrock.ChunkingStrategy.FIXED_SIZE,
-      maxTokens: 500,
-      overlapPercentage: 20,
+      maxTokens: 2000,
+      overlapPercentage: 10,
     });
 
     const s3PutEventSource = new S3EventSource(sourceDocBkt as s3.Bucket, {

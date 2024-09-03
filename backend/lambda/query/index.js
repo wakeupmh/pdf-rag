@@ -21,7 +21,7 @@ exports.handler = middy()
       const input = {
         sessionId: requestSessionId,
         input: {
-          text: question,
+          text: `assume you are specialized in juridic documentation and you must answer the following question in brazilian portuguese: ${question}`,
         },
         retrieveAndGenerateConfiguration: {
           type: "KNOWLEDGE_BASE",
