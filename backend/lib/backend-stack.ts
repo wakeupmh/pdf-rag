@@ -77,6 +77,8 @@ export class BackendStack extends Stack {
       restApiName: "rag-api",
       defaultCorsPreflightOptions: {
         allowOrigins: apigw.Cors.ALL_ORIGINS,
+        allowMethods: apigw.Cors.ALL_METHODS,
+        allowHeaders: ["*"],
       },
     });
 
