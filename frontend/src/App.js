@@ -24,6 +24,7 @@ const App = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-amzn-trace-id": "Root=1-5f107f3e-8b9c3b3b5f1b9b1b1b1b1b1b",
       },
       body: JSON.stringify({
         requestSessionId: sessionId,
