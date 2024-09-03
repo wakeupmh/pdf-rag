@@ -83,7 +83,7 @@ const App = () => {
       <Paper
         sx={{
           padding: 8,
-          maxWidth: 600,
+          maxWidth: 900,
         }}
       >
         <Typography variant="h5" sx={{ textAlign: "center" }}>
