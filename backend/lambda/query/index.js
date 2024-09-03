@@ -62,8 +62,10 @@ function makeResults(statusCode,responseText,citationText,responseSessionId){
       citation: citationText,
       sessionId: responseSessionId
 		}),
-		headers: {
-			'Access-Control-Allow-Origin': '*'
-		}
+    headers: {
+      "Access-Control-Allow-Origin": "https://main.d180kwx3s995v5.amplifyapp.com",
+      "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+    }
 	}; 
 }
