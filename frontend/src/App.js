@@ -11,9 +11,10 @@ import IconButton from "@mui/material/IconButton";
 import SendIcon from "@mui/icons-material/Send";
 
 const App = () => {
-  const baseUrl = "https://w2r678gxwd.execute-api.us-east-1.amazonaws.com/prod/";
+  const baseUrl =
+    "https://w2r678gxwd.execute-api.us-east-1.amazonaws.com/prod/";
   const [history, setHistory] = useState([]);
-  const [question, setQuestion] = useState('');
+  const [question, setQuestion] = useState("");
   const [spinner, setSpinner] = useState(false);
   const [sessionId, setSessionId] = useState(undefined);
 
@@ -107,14 +108,9 @@ const App = () => {
               paddingTop: "20px",
             }}
           >
-            <Typography variant="overline">Pergunte aos seus documentos:</Typography>
-            <Button
-              disabled={history.length === 0}
-              startIcon={<DeleteIcon />}
-              onClick={onClearHistory}
-            >
-              Limpar histórico
-            </Button>
+            <Typography variant="overline">
+              Pergunte aos seus documentos:
+            </Typography>
           </Box>
           <Chat history={history} />
           <br></br>
@@ -151,6 +147,23 @@ const App = () => {
           >
             <SendIcon />
           </IconButton>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingBottom: "20px",
+            paddingTop: "20px",
+          }}
+        >
+          <Button
+            disabled={history.length === 0}
+            startIcon={<DeleteIcon />}
+            onClick={onClearHistory}
+          >
+            Limpar histórico
+          </Button>
         </Box>
       </Paper>
     </Box>

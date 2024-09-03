@@ -78,7 +78,7 @@ export class BackendStack extends Stack {
       defaultCorsPreflightOptions: {
         allowOrigins: apigw.Cors.ALL_ORIGINS,
         allowMethods: apigw.Cors.ALL_METHODS,
-        allowHeaders: ["*"],
+        allowHeaders: [...apigw.Cors.DEFAULT_HEADERS, "x-amzn-trace-id"],
       },
     });
 
@@ -106,9 +106,36 @@ export class BackendStack extends Stack {
       })
     );
 
-    apiGateway.root
-      .addResource("docs")
-      .addMethod("POST", new apigw.LambdaIntegration(lambdaQuery));
+    apiGateway.root.addResource("docs").addMethod(
+      "POST",
+      new apigw.LambdaIntegration(lambdaQuery, {
+        proxy: true,
+        integrationResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": "'*'",
+              "method.response.header.Access-Control-Allow-Headers":
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "method.response.header.Access-Control-Allow-Methods":
+                "'OPTIONS,POST'",
+            },
+          },
+        ],
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+            },
+          },
+        ],
+      }
+    );
 
     apiGateway.addUsagePlan("usage-plan", {
       name: "dev-docs-plan",
