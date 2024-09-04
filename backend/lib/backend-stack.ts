@@ -7,11 +7,11 @@ import {
   ArnFormat,
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import * as s3 from "aws-cdk-lib/aws-s3";
+// import * as s3 from "aws-cdk-lib/aws-s3";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Architecture, Runtime } from "aws-cdk-lib/aws-lambda";
-import { bedrock } from "@cdklabs/generative-ai-cdk-constructs";
-import { S3EventSource } from "aws-cdk-lib/aws-lambda-event-sources";
+// import { bedrock } from "@cdklabs/generative-ai-cdk-constructs";
+// import { S3EventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as apigw from "aws-cdk-lib/aws-apigateway";
 import * as wafv2 from "aws-cdk-lib/aws-wafv2";
@@ -22,53 +22,57 @@ export class BackendStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    /** Knowledge Base */
+    // /** Knowledge Base */
+    const knowledgeBase = {
+      knowledgeBaseId: "QIXEM2LAUK",
+    };
 
-    const knowledgeBase = new bedrock.KnowledgeBase(this, "knowledgeBase", {
-      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-    });
+    // const knowledgeBase = new bedrock.KnowledgeBase(this, "knowledgeBase", {
+    //   embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+    //   instruction: "Please provide the answer to the question always in brazilian portuguese as a lawyer",
+    // });
 
-    /** S3 bucket for Bedrock data source */
-    const sourceDocBkt = s3.Bucket.fromBucketArn(
-      this,
-      "source-doc-bkt",
-      "arn:aws:s3:::doth-iaus"
-    );
+    // /** S3 bucket for Bedrock data source */
+    // const sourceDocBkt = s3.Bucket.fromBucketArn(
+    //   this,
+    //   "source-doc-bkt",
+    //   "arn:aws:s3:::doth-iaus"
+    // );
 
-    const s3DataSource = new bedrock.S3DataSource(this, "iaus-bkt", {
-      bucket: sourceDocBkt,
-      knowledgeBase: knowledgeBase,
-      dataSourceName: "iaus-bkt",
-      chunkingStrategy: bedrock.ChunkingStrategy.FIXED_SIZE,
-      maxTokens: 2000,
-      overlapPercentage: 10,
-    });
+    // const s3DataSource = new bedrock.S3DataSource(this, "iaus-bkt", {
+    //   bucket: sourceDocBkt,
+    //   knowledgeBase: knowledgeBase,
+    //   dataSourceName: "iaus-bkt",
+    //   chunkingStrategy: bedrock.ChunkingStrategy.FIXED_SIZE,
+    //   maxTokens: 2000,
+    //   overlapPercentage: 10,
+    // });
 
-    const s3PutEventSource = new S3EventSource(sourceDocBkt as s3.Bucket, {
-      events: [s3.EventType.OBJECT_CREATED_PUT],
-    });
+    // const s3PutEventSource = new S3EventSource(sourceDocBkt as s3.Bucket, {
+    //   events: [s3.EventType.OBJECT_CREATED_PUT],
+    // });
 
     /** S3 Ingest Lambda for S3 data source */
-    const lambdaIngestionJob = new NodejsFunction(this, "ingestion-job", {
-      runtime: Runtime.NODEJS_20_X,
-      entry: join(__dirname, "../lambda/ingest/index.js"),
-      functionName: `start-ingestion-trigger`,
-      timeout: Duration.minutes(15),
-      environment: {
-        KNOWLEDGE_BASE_ID: knowledgeBase.knowledgeBaseId,
-        DATA_SOURCE_ID: s3DataSource.dataSourceId,
-        BUCKET_ARN: sourceDocBkt.bucketArn,
-      },
-    });
+    // const lambdaIngestionJob = new NodejsFunction(this, "ingestion-job", {
+    //   runtime: Runtime.NODEJS_20_X,
+    //   entry: join(__dirname, "../lambda/ingest/index.js"),
+    //   functionName: `start-ingestion-trigger`,
+    //   timeout: Duration.minutes(15),
+    //   environment: {
+    //     KNOWLEDGE_BASE_ID: knowledgeBase.knowledgeBaseId,
+    //     DATA_SOURCE_ID: s3DataSource.dataSourceId,
+    //     BUCKET_ARN: sourceDocBkt.bucketArn,
+    //   },
+    // });
 
-    lambdaIngestionJob.addEventSource(s3PutEventSource);
+    // lambdaIngestionJob.addEventSource(s3PutEventSource);
 
-    lambdaIngestionJob.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ["bedrock:StartIngestionJob"],
-        resources: [knowledgeBase.knowledgeBaseArn, sourceDocBkt.bucketArn],
-      })
-    );
+    // lambdaIngestionJob.addToRolePolicy(
+    //   new iam.PolicyStatement({
+    //     actions: ["bedrock:StartIngestionJob"],
+    //     resources: [knowledgeBase.knowledgeBaseArn, sourceDocBkt.bucketArn],
+    //   })
+    // );
 
     const whitelistedIps = [Stack.of(this).node.tryGetContext("allowedip")];
 
@@ -249,14 +253,5 @@ export class BackendStack extends Stack {
 
     // make sure api gateway is deployed before web ACL association
     webACLAssociation.node.addDependency(apiGateway);
-
-    //CfnOutput is used to log API Gateway URL and S3 bucket name to console
-    new CfnOutput(this, "api-gateway-url", {
-      value: apiGateway.url,
-    });
-
-    new CfnOutput(this, "DocsBucketName", {
-      value: sourceDocBkt.bucketName,
-    });
   }
 }
